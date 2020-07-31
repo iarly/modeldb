@@ -121,6 +121,41 @@
           }
         }
       }
+    },
+    "modeldb-lib": {
+      "root": "projects/modeldb-lib",
+      "sourceRoot": "projects/modeldb-lib/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/modeldb-lib/tsconfig.lib.json",
+            "project": "projects/modeldb-lib/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/modeldb-lib/tests/test.ts",
+            "tsConfig": "projects/modeldb-lib/tsconfig.spec.json",
+            "karmaConfig": "projects/modeldb-lib/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/modeldb-lib/tsconfig.lib.json",
+              "projects/modeldb-lib/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "modeldb"
