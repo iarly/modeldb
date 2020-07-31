@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
+    "build": "ng build modeldb-lib",
+    "test": "ng test --no-watch --project modeldb-lib",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },

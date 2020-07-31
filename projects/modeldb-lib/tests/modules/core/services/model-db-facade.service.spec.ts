@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { ModelDBFacadeService } from '../../../../src/modules/core/services/model-db-facade.service';
 
 import { ActorModel, DirectorModel, MovieModel, AuthorModel } from '../stubs/models';
-import { DocumentRepository } from 'projects/modeldb-lib/src/modules/core/repositories/document.repository';
-import { typeOfModel } from 'projects/modeldb-lib/src/modules/core/decorators/model.decorator';
-import { CacheOptions } from 'projects/modeldb-lib/src/modules/core/models/cache-options.model';
+import { DocumentRepository } from './../../../../src/modules/core/repositories/document.repository';
+import { typeOfModel } from './../../../../src/modules/core/decorators/model.decorator';
+import { CacheOptions } from './../../../../src/modules/core/models/cache-options.model';
 
 describe('ModelDBFacadeService', () => {
 

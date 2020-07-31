@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-
-import { HashGeneratorService } from './hash-generator.service';
+import { HashGeneratorService } from './../../../../src/modules/http/services/hash-generator.service';
 
 describe('HashGeneratorService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

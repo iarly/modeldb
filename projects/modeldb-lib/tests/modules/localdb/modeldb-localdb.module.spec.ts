@@ -1,4 +1,5 @@
-import { ModeldbLocaldbModule } from './modeldb-localdb.module';
+import { ModeldbLocaldbModule } from "./../../../src/modules/localdb/modeldb-localdb.module";
+
 
 describe('ModeldbLocaldbModule', () => {
   let modeldbLocaldbModule: ModeldbLocaldbModule;

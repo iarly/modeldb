@@ -3,7 +3,6 @@ import { HttpClient } from "@angular/common/http";
 import { HashGeneratorService } from './hash-generator.service';
 import { ModelDBFacadeService, ModelClass } from '../../core/services/model-db-facade.service';
 import { CacheOptions } from '../../core/models/cache-options.model';
-import { Content } from '@angular/compiler/src/render3/r3_ast';
 
 @Injectable({
   providedIn: 'root'

@@ -1,4 +1,4 @@
-import { ModelDBHttpModule } from './model-db-http.module';
+import { ModelDBHttpModule } from "./../../../src/modules/http/model-db-http.module";
 
 describe('ModelDBHttpModule', () => {
   let modelDBHttpModule: ModelDBHttpModule;
