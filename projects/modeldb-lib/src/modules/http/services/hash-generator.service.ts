@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import ObjectHash from 'object-hash';
+import { toBase64String } from '@angular/compiler/src/output/source_map';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class HashGeneratorService {
   }
 
   public hashObject(object: any): string {
-    return ObjectHash(object);
+    return toBase64String(JSON.stringify(object));
   }
 
 }

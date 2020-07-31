@@ -9,7 +9,7 @@ import { HashGeneratorService } from './services/hash-generator.service';
     CommonModule,
     ModelDBModule
   ],
-  declarations: [
+  providers: [
     ModelClient,
     HashGeneratorService
   ]

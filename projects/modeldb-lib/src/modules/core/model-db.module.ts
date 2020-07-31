@@ -7,9 +7,11 @@ import { DocumentRepository } from './repositories/document.repository';
   imports: [
     CommonModule
   ],
-  declarations: [
+  providers: [
     DocumentRepository,
     ModelDBFacadeService
+  ],
+  declarations: [
   ]
 })
 export class ModelDBModule { }

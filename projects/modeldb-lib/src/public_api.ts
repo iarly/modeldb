@@ -7,10 +7,10 @@
  */
 
 // Decorators
-export * from './modules/core/decorators/composition.decorator';
-export * from './modules/core/decorators/date.decorator';
 export * from './modules/core/decorators/extended.decorator';
 export * from './modules/core/decorators/model.decorator';
+export * from './modules/core/decorators/composition.decorator';
+export * from './modules/core/decorators/date.decorator';
 export * from './modules/core/decorators/primary-key.decorator';
 
 // Models
