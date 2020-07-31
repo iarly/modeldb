@@ -1,6 +1,12 @@
 # Modeldb
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.9.
+ModelDB is tiny model mapper and resolver with cache capabilities at client.
+
+Currently it has small development cycles driven by tests. The backlog is oriented by author's needs.
+
+The library is Angular6+ compatible.
+
+[![Build status](https://dev.azure.com/iarly/modeldb/_apis/build/status/Publish)](https://dev.azure.com/iarly/modeldb/_build/latest?definitionId=1)
 
 ## Development server
 
