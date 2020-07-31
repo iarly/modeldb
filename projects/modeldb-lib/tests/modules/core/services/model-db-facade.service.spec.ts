@@ -81,7 +81,7 @@ describe('ModelDBFacadeService', () => {
     expect((document.author as AuthorModel).initialAndName).toBe("KLA is K.L. Author");
   });
 
-  it('should convert a neasted collection of a document to a array of Persons', async () => {
+  it('should convert a nested collection of a document to a array of Persons', async () => {
     const rawDocument = {
       casting: [{
         uid: '3',
@@ -114,7 +114,7 @@ describe('ModelDBFacadeService', () => {
     expect(document.name).toBe(rawDocument.name);
   });
 
-  it('should upsert the same Movie two times in differents subcolections of cache when it was previously loaded in differents subcollections of cache', async () => {
+  it('should get two versions of the same Movie when it was previously loaded in different caches', async () => {
     const cache1: CacheOptions = {
       subcollection: "sub1"
     };
@@ -186,12 +186,12 @@ describe('ModelDBFacadeService', () => {
 
   it('should get a document when its cache is not expired', async () => {
 
-    const expiredTime = new Date();
-    expiredTime.setDate(expiredTime.getDate() + 1);
+    const notExpiredTime = new Date();
+    notExpiredTime.setDate(notExpiredTime.getDate() + 1);
 
     const cache1: CacheOptions = {
       subcollection: "not-expired",
-      expirationTime: expiredTime
+      expirationTime: notExpiredTime
     };
 
     const rawDocument = {
