@@ -1,7 +1,11 @@
 export class CacheOptions {
 
-    subcollection?: string = "default";
+    /**
+     *
+     */
+    constructor(public subcollection: string = "default",
+        public expirationTime: Date = null) {
 
-    expirationTime?: Date = null;
+    }
 
 }

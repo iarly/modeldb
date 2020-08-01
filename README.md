@@ -52,7 +52,7 @@ class MovieRepository {
   }
   
   public async getAllAsync(uid: number): Promise<MovieModel[]> {
-    const movies = await this.modelClient.get<MovieModel, MovieModel[]>(MovieModel, "https://cine.app/api/movies/");
+    const movies = await this.modelClient.get<MovieModel[]>(MovieModel, "https://cine.app/api/movies/");
     
     return movies;
   }

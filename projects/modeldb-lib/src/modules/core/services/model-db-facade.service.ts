@@ -6,6 +6,7 @@ import { getClassType, isComposition, hasMany } from '../decorators/composition.
 import { getDiscriminatorOfType } from '../decorators/extended.decorator';
 import { CacheOptions } from '../models/cache-options.model';
 import { isDate } from '../decorators/date.decorator';
+import { SessionService } from './session.service';
 
 export type ModelClass<T> = {
   new(): T;
@@ -16,12 +17,12 @@ export type ModelClass<T> = {
 })
 export class ModelDBFacadeService implements OnDestroy {
 
-  constructor(protected documentRepository: DocumentRepository) {
+  constructor(protected session: SessionService, protected documentRepository: DocumentRepository) {
 
   }
 
   public get<T>(rootDocumentType: ModelClass<T>, primaryKeyValue: string, cacheOptions: CacheOptions = null): Promise<T> {
-    cacheOptions = cacheOptions || new CacheOptions();
+    cacheOptions = cacheOptions || this.createDefaultCacheOptions();
 
     const modelName = nameOfModel(rootDocumentType);
 
@@ -29,7 +30,7 @@ export class ModelDBFacadeService implements OnDestroy {
   }
 
   public async upsert<T>(rootDocumentType: ModelClass<T>, rawDocument: any, cacheOptions: CacheOptions = null): Promise<T> {
-    cacheOptions = cacheOptions || new CacheOptions();
+    cacheOptions = cacheOptions || this.createDefaultCacheOptions();
 
     const modelName = nameOfModel(rootDocumentType);
 
@@ -38,6 +39,10 @@ export class ModelDBFacadeService implements OnDestroy {
     await this.processProperties<T>(rawDocument, document);
 
     return document;
+  }
+
+  private createDefaultCacheOptions(): CacheOptions {
+    return new CacheOptions(this.session.uniqueIdentifier);
   }
 
   private async processProperties<T>(rawDocument: any, document: T): Promise<void> {

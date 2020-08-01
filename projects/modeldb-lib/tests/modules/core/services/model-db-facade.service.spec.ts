@@ -6,6 +6,7 @@ import { ActorModel, DirectorModel, MovieModel, AuthorModel } from '../stubs/mod
 import { DocumentRepository } from './../../../../src/modules/core/repositories/document.repository';
 import { typeOfModel } from './../../../../src/modules/core/decorators/model.decorator';
 import { CacheOptions } from './../../../../src/modules/core/models/cache-options.model';
+import { SessionService } from 'projects/modeldb-lib/src/modules/core/services/session.service';
 
 describe('ModelDBFacadeService', () => {
 
@@ -13,7 +14,8 @@ describe('ModelDBFacadeService', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
-      DocumentRepository
+      DocumentRepository,
+      SessionService
     ]
   }));
 
@@ -116,11 +118,13 @@ describe('ModelDBFacadeService', () => {
 
   it('should get two versions of the same Movie when it was previously loaded in different caches', async () => {
     const cache1: CacheOptions = {
-      subcollection: "sub1"
+      subcollection: "sub1",
+      expirationTime: null
     };
 
     const cache2: CacheOptions = {
-      subcollection: "sub2"
+      subcollection: "sub2",
+      expirationTime: null
     };
 
     const rawDocument = {
@@ -143,11 +147,13 @@ describe('ModelDBFacadeService', () => {
 
   it('should not get a document when it was cached in different subcollection', async () => {
     const cache1: CacheOptions = {
-      subcollection: "where-the-document-exists"
+      subcollection: "where-the-document-exists",
+      expirationTime: null
     };
 
     const cache2: CacheOptions = {
-      subcollection: "will-not-find"
+      subcollection: "will-not-find",
+      expirationTime: null
     };
 
     const rawDocument = {

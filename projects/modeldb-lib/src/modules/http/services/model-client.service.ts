@@ -15,7 +15,7 @@ export class ModelClient {
 
   }
 
-  public async get<TElement, TReturn>(resultType: ModelClass<TElement>,
+  public async get<TReturn>(resultType: ModelClass<any>,
     url: string, expirationTime: Date = null): Promise<TReturn> {
 
     const argumentsHash = this.hashGenerator.hashObject(url);
@@ -26,10 +26,10 @@ export class ModelClient {
 
     const content = await response.toPromise();
 
-    return this.convertContentToResult<TElement, TReturn>(resultType, content, cacheOptions);
+    return this.convertContentToResult<TReturn>(resultType, content, cacheOptions);
   }
 
-  public async post<TElement, TReturn>(resultType: ModelClass<TElement>,
+  public async post<TReturn>(resultType: ModelClass<any>,
     url: string, body: any | null, expirationTime: Date = null): Promise<TReturn> {
 
     const argumentsHash = this.hashGenerator.hashObject({ url, body });
@@ -40,7 +40,7 @@ export class ModelClient {
 
     const content = await response.toPromise();
 
-    return this.convertContentToResult<TElement, TReturn>(resultType, content, cacheOptions);
+    return this.convertContentToResult<TReturn>(resultType, content, cacheOptions);
   }
 
   private createCacheOptions(argumentsHash: string, expirationTime: Date): CacheOptions {
@@ -50,7 +50,7 @@ export class ModelClient {
     };
   }
 
-  private convertContentToResult<TElement, TReturn>(resultType: ModelClass<TElement>, content: any, cacheOptions: CacheOptions) {
+  private convertContentToResult<TReturn>(resultType: ModelClass<any>, content: any, cacheOptions: CacheOptions) {
     if (!content) {
       return null;
     }

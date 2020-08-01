@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { ModelClient } from 'projects/modeldb-lib/src/modules/http/services/model-client.service';
 import { AuthorModel } from '../../core/stubs/models';
 import { ModelDBFacadeService } from 'projects/modeldb-lib/src/public_api';
+import { SessionService } from 'projects/modeldb-lib/src/modules/core/services/session.service';
 
 describe('ModelClientService', () => {
     let injector: TestBed;
@@ -17,7 +18,8 @@ describe('ModelClientService', () => {
             ],
             providers: [
                 ModelClient,
-                ModelDBFacadeService
+                ModelDBFacadeService,
+                SessionService
             ]
         });
 
@@ -40,7 +42,7 @@ describe('ModelClientService', () => {
     it('should make a new request when sending get request', () => {
         const url = "https://cine.ma/api/authors";
 
-        service.get<AuthorModel, AuthorModel[]>(AuthorModel, url);
+        service.get<AuthorModel[]>(AuthorModel, url);
 
         const req = httpMock.expectOne(url);
         expect(req.request.method).toBe("GET");
@@ -51,7 +53,7 @@ describe('ModelClientService', () => {
         const url = "https://cine.ma/api/authors";
         const body = {};
 
-        service.post<AuthorModel, AuthorModel[]>(AuthorModel, url, body);
+        service.post<AuthorModel[]>(AuthorModel, url, body);
 
         const req = httpMock.expectOne(url);
         expect(req.request.method).toBe("POST");
@@ -61,7 +63,7 @@ describe('ModelClientService', () => {
     it('should call modelClient when requesting', () => {
         const url = "https://cine.ma/api/authors";
 
-        service.get<AuthorModel, AuthorModel[]>(AuthorModel, url).then(_ => {
+        service.get<AuthorModel[]>(AuthorModel, url).then(_ => {
             expect(modelDb.upsert).toHaveBeenCalledTimes(1);
         });
 
