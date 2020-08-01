@@ -117,15 +117,15 @@ describe('ModelDBFacadeService', () => {
   });
 
   it('should get two versions of the same Movie when it was previously loaded in different caches', async () => {
-    const cache1: CacheOptions = {
+    const cache1: CacheOptions = CacheOptions.expires({
       subcollection: "sub1",
       expirationTime: null
-    };
+    });
 
-    const cache2: CacheOptions = {
+    const cache2: CacheOptions = CacheOptions.expires({
       subcollection: "sub2",
       expirationTime: null
-    };
+    });
 
     const rawDocument = {
       uid: '1',
@@ -151,10 +151,10 @@ describe('ModelDBFacadeService', () => {
       expirationTime: null
     };
 
-    const cache2: CacheOptions = {
+    const cache2: CacheOptions = CacheOptions.expires({
       subcollection: "will-not-find",
       expirationTime: null
-    };
+    });
 
     const rawDocument = {
       uid: '1',
@@ -173,10 +173,10 @@ describe('ModelDBFacadeService', () => {
     const expiredTime = new Date();
     expiredTime.setDate(expiredTime.getDate() - 1);
 
-    const cache1: CacheOptions = {
+    const cache1: CacheOptions = CacheOptions.expires({
       subcollection: "expired",
       expirationTime: expiredTime
-    };
+    });
 
     const rawDocument = {
       uid: '1',
@@ -195,10 +195,10 @@ describe('ModelDBFacadeService', () => {
     const notExpiredTime = new Date();
     notExpiredTime.setDate(notExpiredTime.getDate() + 1);
 
-    const cache1: CacheOptions = {
+    const cache1: CacheOptions = CacheOptions.expires({
       subcollection: "not-expired",
       expirationTime: notExpiredTime
-    };
+    });
 
     const rawDocument = {
       uid: '1',
@@ -210,6 +210,22 @@ describe('ModelDBFacadeService', () => {
     const document = await service.get<MovieModel>(MovieModel, '1', cache1);
 
     expect(document).not.toBeNull();
+  });
+
+  it('should not get a document when its cache is disabled', async () => {
+
+    const cache: CacheOptions = CacheOptions.disabled();
+
+    const rawDocument = {
+      uid: '1',
+      name: 'My First Movie'
+    };
+
+    await service.upsert<MovieModel>(MovieModel, rawDocument, cache);
+
+    const document = await service.get<MovieModel>(MovieModel, '1', cache);
+
+    expect(document).toBeFalsy();
   });
 
 });

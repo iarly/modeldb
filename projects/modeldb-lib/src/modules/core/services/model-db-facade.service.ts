@@ -100,12 +100,14 @@ export class ModelDBFacadeService implements OnDestroy {
   private async createOrGetFromCache<T>(rootDocumentType: ModelClass<T>, rawDocument: any, modelName: string, cacheOptions: CacheOptions = null): Promise<T> {
     let document = new rootDocumentType();
 
-    const primaryKeyValue = this.getPrimaryKeyValue<T>(document, rawDocument, modelName);
-    const cachedDocument = await this.getByModelName<T>(modelName, primaryKeyValue, cacheOptions);
+    if (cacheOptions.enabled) {
+      const primaryKeyValue = this.getPrimaryKeyValue<T>(document, rawDocument, modelName);
+      const cachedDocument = await this.getByModelName<T>(modelName, primaryKeyValue, cacheOptions);
 
-    document = cachedDocument || document;
+      document = cachedDocument || document;
 
-    await this.documentRepository.set(modelName, primaryKeyValue, document, cacheOptions);
+      await this.documentRepository.set(modelName, primaryKeyValue, document, cacheOptions);
+    }
 
     return document;
   }
