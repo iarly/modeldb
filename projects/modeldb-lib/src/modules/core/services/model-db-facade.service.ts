@@ -42,7 +42,7 @@ export class ModelDBFacadeService implements OnDestroy {
   }
 
   private createDefaultCacheOptions(): CacheOptions {
-    return new CacheOptions(this.session.uniqueIdentifier);
+    return CacheOptions.notExpires(this.session.uniqueIdentifier);
   }
 
   private async processProperties<T>(rawDocument: any, document: T): Promise<void> {
