@@ -6,6 +6,16 @@ export class CacheOptions {
     public expirationTime?: Date = null;
     public enabled?: boolean = true;
 
+    public static expiresIn(options: { subcollection?: string, minutes?: number } = null): CacheOptions {
+        let expirationTime = new Date();
+        expirationTime.setMinutes(expirationTime.getMinutes() + options.minutes);
+
+        return this.expires({
+            subcollection: options.subcollection,
+            expirationTime
+        });
+    }
+
     public static expires(options: { subcollection?: string, expirationTime?: Date } = null): CacheOptions {
         return {
             subcollection: (options ? options.subcollection : null) || CacheOptions.DefaultSubCollection,
