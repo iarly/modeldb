@@ -1,27 +1,27 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SessionService } from '../../../../src/modules/core/services/session.service';
+import { ModelDbSession } from '../../../../src/modules/core/models/model-db-session.model';
 
 describe('SessionService', () => {
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
-      SessionService
+      ModelDbSession
     ]
   }));
 
   it('should be created', () => {
-    const service: SessionService = TestBed.get(SessionService);
+    const service: ModelDbSession = TestBed.get(ModelDbSession);
     expect(service).toBeTruthy();
   });
 
   it('should have default uniqueindetifier when created without constructor params', () => {
-    const service: SessionService = TestBed.get(SessionService);
+    const service: ModelDbSession = TestBed.get(ModelDbSession);
     expect(service.uniqueIdentifier).toBe("default");
   });
 
   it('should have default uniqueindetifier when created without constructor params', () => {
     const expectedUniqueIdentifier = "my-unique-identifier";
-    const service: SessionService = { uniqueIdentifier: expectedUniqueIdentifier };
+    const service: ModelDbSession = { uniqueIdentifier: expectedUniqueIdentifier };
     expect(service.uniqueIdentifier).toBe(expectedUniqueIdentifier);
   });
 

@@ -6,50 +6,70 @@ describe('CacheOptions', () => {
   it('should be created with default values', () => {
     cacheOptions = new CacheOptions();
 
-    expect(cacheOptions.subcollection).toBe("default");
+    expect(cacheOptions.collections.length).toBe(0);
     expect(cacheOptions.expirationTime).toBeNull();
     expect(cacheOptions.enabled).toBeTruthy();
   });
 
-  it('should be create disabled when using disabled option', () => {
-    cacheOptions = CacheOptions.disabled();
+  it('should be disabled when using disabled option', () => {
+    cacheOptions = new CacheOptions().not.enable();
 
     expect(cacheOptions.enabled).toBeFalsy();
   });
 
-  it('should be create with expiration date and default collection when using expires option with only expirationTime parameter', () => {
+  it('should be enabled when using enabled option', () => {
+    cacheOptions = new CacheOptions().not.enable();
+
+    cacheOptions.enable();
+
+    expect(cacheOptions.enabled).toBeTruthy();
+  });
+
+  it('should expires when using expires option', () => {
     const expectedExpirationTime = new Date();
 
-    cacheOptions = CacheOptions.expires({ expirationTime: expectedExpirationTime });
+    cacheOptions = new CacheOptions().expires(expectedExpirationTime);
 
-    expect(cacheOptions.subcollection).toBe(CacheOptions.DefaultSubCollection);
     expect(cacheOptions.expirationTime).toBe(expectedExpirationTime);
   });
 
-  it('should be create with expiration date and collection when using expires option with both parameter', () => {
-    const expectedExpirationTime = new Date();
-    const expectedCollection = "my-expected-collection";
+  it('should not expires when using not.expires command', () => {
+    cacheOptions = new CacheOptions().not.expires();
 
-    cacheOptions = CacheOptions.expires({ subcollection: expectedCollection, expirationTime: expectedExpirationTime });
-
-    expect(cacheOptions.subcollection).toBe(expectedCollection);
-    expect(cacheOptions.expirationTime).toBe(expectedExpirationTime);
-  });
-
-  it('should be create without expiration date and default subcollection when using notExpires option without parameter', () => {
-    cacheOptions = CacheOptions.notExpires();
-
-    expect(cacheOptions.subcollection).toBe(CacheOptions.DefaultSubCollection);
     expect(cacheOptions.expirationTime).toBeNull();
   });
 
-  it('should be create without expiration date and with subcollection when using notExpires option with subcollection parameter', () => {
+  it('should have one collection when using the "at" option one time', () => {
     const expectedCollection = "my-expected-collection";
+    cacheOptions = new CacheOptions().at(expectedCollection);
 
-    cacheOptions = CacheOptions.notExpires(expectedCollection);
+    expect(cacheOptions.collections.length).toBe(1);
+    expect(cacheOptions.collections[0]).toBe(expectedCollection);
+  });
 
-    expect(cacheOptions.subcollection).toBe(expectedCollection);
-    expect(cacheOptions.expirationTime).toBeNull();
+  it('should expect the last collection inputed when using the "at" option two times', () => {
+    const expectedCollection = "my-expected-collection";
+    const notExpectedCollection = "not-expected-collection";
+
+    cacheOptions = new CacheOptions().at(notExpectedCollection);
+
+    cacheOptions.at(expectedCollection);
+
+    expect(cacheOptions.collections.length).toBe(1);
+    expect(cacheOptions.collections[0]).toBe(expectedCollection);
+  });
+
+  it('should expect two collections inputed when using the "at" and "and.at" options', () => {
+    const expectedCollection = "my-expected-collection";
+    const expectedCollection2 = "my-expected-collection-2";
+
+    cacheOptions = new CacheOptions();
+
+    cacheOptions.at(expectedCollection).and.at(expectedCollection2);
+
+    expect(cacheOptions.collections.length).toBe(2);
+    expect(cacheOptions.collections[0]).toBe(expectedCollection);
+    expect(cacheOptions.collections[1]).toBe(expectedCollection2);
   });
 
   it('should expires in 10 minutes when create the session using the expiresIn method with parameter 10', () => {
@@ -59,10 +79,10 @@ describe('CacheOptions', () => {
     const afterExpirationTime = new Date();
     afterExpirationTime.setMinutes(afterExpirationTime.getMinutes() + 11);
 
-    cacheOptions = CacheOptions.expiresIn({ minutes: 10 });
+    cacheOptions = new CacheOptions().expiresIn(10);
 
-    expect(cacheOptions.expirationTime > beforeExpirationTime).toBeTruthy();
-    expect(cacheOptions.expirationTime < afterExpirationTime).toBeTruthy();
+    expect(cacheOptions.expirationTime >= beforeExpirationTime).toBeTruthy();
+    expect(cacheOptions.expirationTime <= afterExpirationTime).toBeTruthy();
   });
 
 

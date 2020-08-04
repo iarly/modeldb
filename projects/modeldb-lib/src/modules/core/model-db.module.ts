@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModelDBFacadeService } from './services/model-db-facade.service';
+import { ModelDbService } from './services/model-db.service';
 import { DocumentRepository } from './repositories/document.repository';
 
 @NgModule({
@@ -9,7 +9,7 @@ import { DocumentRepository } from './repositories/document.repository';
   ],
   providers: [
     DocumentRepository,
-    ModelDBFacadeService
+    ModelDbService
   ],
   declarations: [
   ]

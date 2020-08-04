@@ -1,26 +1,29 @@
 import { TestBed } from '@angular/core/testing';
 
-import { ModelDBFacadeService } from '../../../../src/modules/core/services/model-db-facade.service';
+import { ModelDbService } from '../../../../src/modules/core/services/model-db.service';
 
 import { ActorModel, DirectorModel, MovieModel, AuthorModel } from '../stubs/models';
-import { DocumentRepository } from './../../../../src/modules/core/repositories/document.repository';
-import { typeOfModel } from './../../../../src/modules/core/decorators/model.decorator';
-import { CacheOptions } from './../../../../src/modules/core/models/cache-options.model';
-import { SessionService } from 'projects/modeldb-lib/src/modules/core/services/session.service';
+import { DocumentRepository } from '../../../../src/modules/core/repositories/document.repository';
+import { typeOfModel } from '../../../../src/modules/core/decorators/model.decorator';
+import { CacheOptions } from '../../../../src/modules/core/models/cache-options.model';
+import { ModelDbSession } from 'projects/modeldb-lib/src/modules/core/models/model-db-session.model';
 
-describe('ModelDBFacadeService', () => {
+describe('ModelDbService', () => {
 
-  let service: ModelDBFacadeService;
+  let service: ModelDbService;
 
-  beforeEach(() => TestBed.configureTestingModule({
-    providers: [
-      DocumentRepository,
-      SessionService
-    ]
-  }));
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        DocumentRepository,
+        ModelDbSession
+      ]
+    });
+
+    service = TestBed.get(ModelDbService);
+  });
 
   it('should be created', () => {
-    service = TestBed.get(ModelDBFacadeService);
     expect(service).toBeTruthy();
   });
 
@@ -110,22 +113,16 @@ describe('ModelDBFacadeService', () => {
 
     await service.upsert<MovieModel>(MovieModel, rawDocument);
 
-    const document = await service.get<MovieModel>(MovieModel, '1');
+    const document = await (await service.get<MovieModel>(MovieModel, '1')).document;
 
     expect(document.uid).toBe(rawDocument.uid);
     expect(document.name).toBe(rawDocument.name);
   });
 
   it('should get two versions of the same Movie when it was previously loaded in different caches', async () => {
-    const cache1: CacheOptions = CacheOptions.expires({
-      subcollection: "sub1",
-      expirationTime: null
-    });
+    const cache1: CacheOptions = new CacheOptions().not.expires().at("sub1");
 
-    const cache2: CacheOptions = CacheOptions.expires({
-      subcollection: "sub2",
-      expirationTime: null
-    });
+    const cache2: CacheOptions = new CacheOptions().not.expires().at("sub2");
 
     const rawDocument = {
       uid: '1',
@@ -135,8 +132,8 @@ describe('ModelDBFacadeService', () => {
     await service.upsert<MovieModel>(MovieModel, rawDocument, cache1);
     await service.upsert<MovieModel>(MovieModel, rawDocument, cache2);
 
-    const document1 = await service.get<MovieModel>(MovieModel, '1', cache1);
-    const document2 = await service.get<MovieModel>(MovieModel, '1', cache2);
+    const document1 = await (await service.get<MovieModel>(MovieModel, '1', cache1)).document;
+    const document2 = await (await service.get<MovieModel>(MovieModel, '1', cache2)).document;
 
     expect(document1).not.toBe(document2);
     expect(document1.uid).toBe(rawDocument.uid);
@@ -146,15 +143,9 @@ describe('ModelDBFacadeService', () => {
   });
 
   it('should not get a document when it was cached in different subcollection', async () => {
-    const cache1: CacheOptions = {
-      subcollection: "where-the-document-exists",
-      expirationTime: null
-    };
+    const cache1: CacheOptions = new CacheOptions().not.expires().at("where-the-document-exists");
 
-    const cache2: CacheOptions = CacheOptions.expires({
-      subcollection: "will-not-find",
-      expirationTime: null
-    });
+    const cache2: CacheOptions = new CacheOptions().not.expires().at("will-not-find");
 
     const rawDocument = {
       uid: '1',
@@ -173,10 +164,7 @@ describe('ModelDBFacadeService', () => {
     const expiredTime = new Date();
     expiredTime.setDate(expiredTime.getDate() - 1);
 
-    const cache1: CacheOptions = CacheOptions.expires({
-      subcollection: "expired",
-      expirationTime: expiredTime
-    });
+    const cache1: CacheOptions = new CacheOptions().expires(expiredTime).at("expired");
 
     const rawDocument = {
       uid: '1',
@@ -195,10 +183,7 @@ describe('ModelDBFacadeService', () => {
     const notExpiredTime = new Date();
     notExpiredTime.setDate(notExpiredTime.getDate() + 1);
 
-    const cache1: CacheOptions = CacheOptions.expires({
-      subcollection: "not-expired",
-      expirationTime: notExpiredTime
-    });
+    const cache1: CacheOptions = new CacheOptions().expires(notExpiredTime).at("not-expired");
 
     const rawDocument = {
       uid: '1',
@@ -214,7 +199,7 @@ describe('ModelDBFacadeService', () => {
 
   it('should not get a document when its cache is disabled', async () => {
 
-    const cache: CacheOptions = CacheOptions.disabled();
+    const cache: CacheOptions = new CacheOptions().not.enable();
 
     const rawDocument = {
       uid: '1',
@@ -226,6 +211,30 @@ describe('ModelDBFacadeService', () => {
     const document = await service.get<MovieModel>(MovieModel, '1', cache);
 
     expect(document).toBeFalsy();
+  });
+
+
+  it('should get two documents when two documents was previously loaded ', async () => {
+
+    const cache: CacheOptions = new CacheOptions().at("my-two-documents");
+
+    const rawDocument1 = {
+      uid: '1',
+      name: 'My First Movie'
+    };
+
+    const rawDocument2 = {
+      uid: '2',
+      name: 'My First Movie'
+    };
+
+    await service.upsert<MovieModel>(MovieModel, rawDocument1, cache);
+
+    await service.upsert<MovieModel>(MovieModel, rawDocument2, cache);
+
+    const documents = await service.getMany<MovieModel>(MovieModel, cache);
+
+    expect(documents.length).toBe(2);
   });
 
 });

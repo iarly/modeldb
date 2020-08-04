@@ -6,7 +6,8 @@ import { getClassType, isComposition, hasMany } from '../decorators/composition.
 import { getDiscriminatorOfType } from '../decorators/extended.decorator';
 import { CacheOptions } from '../models/cache-options.model';
 import { isDate } from '../decorators/date.decorator';
-import { SessionService } from './session.service';
+import { ModelDbSession } from '../models/model-db-session.model';
+import { CachedDocument } from '../models/cached-document.model';
 
 export type ModelClass<T> = {
   new(): T;
@@ -15,18 +16,26 @@ export type ModelClass<T> = {
 @Injectable({
   providedIn: 'root'
 })
-export class ModelDBFacadeService implements OnDestroy {
+export class ModelDbService implements OnDestroy {
 
-  constructor(protected session: SessionService, protected documentRepository: DocumentRepository) {
+  constructor(protected session: ModelDbSession, protected documentRepository: DocumentRepository) {
 
   }
 
-  public get<T>(rootDocumentType: ModelClass<T>, primaryKeyValue: string, cacheOptions: CacheOptions = null): Promise<T> {
+  public getMany<T>(rootDocumentType: ModelClass<T>, cacheOptions: CacheOptions = null): Promise<CachedDocument<T>[]> {
     cacheOptions = cacheOptions || this.createDefaultCacheOptions();
 
     const modelName = nameOfModel(rootDocumentType);
 
-    return this.getByModelName(modelName, primaryKeyValue, cacheOptions);
+    return this.documentRepository.getAll<T>(this.session.uniqueIdentifier, modelName, cacheOptions);
+  }
+
+  public get<T>(rootDocumentType: ModelClass<T>, primaryKeyValue: string, cacheOptions: CacheOptions = null): Promise<CachedDocument<T>> {
+    cacheOptions = cacheOptions || this.createDefaultCacheOptions();
+
+    const modelName = nameOfModel(rootDocumentType);
+
+    return this.getByModelName<T>(modelName, primaryKeyValue, cacheOptions);
   }
 
   public async upsert<T>(rootDocumentType: ModelClass<T>, rawDocument: any, cacheOptions: CacheOptions = null): Promise<T> {
@@ -42,7 +51,7 @@ export class ModelDBFacadeService implements OnDestroy {
   }
 
   private createDefaultCacheOptions(): CacheOptions {
-    return CacheOptions.notExpires(this.session.uniqueIdentifier);
+    return new CacheOptions().not.expires().at(this.session.uniqueIdentifier);
   }
 
   private async processProperties<T>(rawDocument: any, document: T): Promise<void> {
@@ -104,9 +113,9 @@ export class ModelDBFacadeService implements OnDestroy {
       const primaryKeyValue = this.getPrimaryKeyValue<T>(document, rawDocument, modelName);
       const cachedDocument = await this.getByModelName<T>(modelName, primaryKeyValue, cacheOptions);
 
-      document = cachedDocument || document;
+      document = cachedDocument ? cachedDocument.document : document;
 
-      await this.documentRepository.set(modelName, primaryKeyValue, document, cacheOptions);
+      await this.documentRepository.set(this.session.uniqueIdentifier, modelName, primaryKeyValue, document, cacheOptions);
     }
 
     return document;
@@ -122,9 +131,12 @@ export class ModelDBFacadeService implements OnDestroy {
   }
 
   private async getByModelName<T>(modelName: string, primaryKeyValue: any, cacheOptions: CacheOptions) {
-    const cachedDocument = await this.documentRepository.get<T>(modelName, primaryKeyValue, cacheOptions);
+    if (cacheOptions.enabled) {
+      const cachedDocument = await this.documentRepository.get<T>(this.session.uniqueIdentifier, modelName, primaryKeyValue, cacheOptions);
 
-    return cachedDocument;
+      return cachedDocument;
+    }
+    return null;
   }
 
   public ngOnDestroy() {
